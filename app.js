@@ -6,8 +6,9 @@ class SnakeGame{
         this.wallSize = 10;
         this.dx = 0;
         this.dy = 0;
-        this.init();
+        this.food = {x:0, y:0, color:"white"};
         this.pauseGame = true;
+        this.init();
     }
 
     init(){
@@ -16,6 +17,7 @@ class SnakeGame{
         setInterval(() => {
             this.clearCanvas();
             if(!this.pauseGame) this.moveSnake(this.dx, this.dy);
+            this.drawFood();
             this.drawSnake();
             
         }, 100)
@@ -77,6 +79,8 @@ class SnakeGame{
     resetGame(){
         this.snake = [];
         this.makeSnake(5);
+        this.randomFood();
+        console.log(this.food);
         this.pauseGame = true;
     }
 
@@ -94,6 +98,21 @@ class SnakeGame{
         let headY = this.snake[0].y + dy;
         this.snake.unshift({x: headX, y: headY});
         this.snake.pop();
+    }
+
+    randomFood(){
+        const randV = (min, max) =>{
+            return Math.floor( (Math.random() * (max-min) + min) / this.wallSize) * this.wallSize;
+        };
+        let colors = ["yellow", "silver", "white", "orange", "green", "blue"];
+        this.food.color = colors[Math.floor((Math.random() * colors.length))];
+        this.food.x = randV(20, this.canvas.width - 20);
+        this.food.y = randV(20, this.canvas.height - 20);
+    }
+
+    drawFood(){
+        this.context2d.fillStyle = this.food.color;
+        this.context2d.fillRect(this.food.x, this.food.y, this.wallSize, this.wallSize);
     }
 }
 
