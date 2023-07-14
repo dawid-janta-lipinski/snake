@@ -2,7 +2,10 @@ class SnakeGame{
     constructor(){
         this.canvas = document.querySelector("#canvas");
         this.context2d = this.canvas.getContext("2d");
+        this.pointSelector = document.getElementById("span");
         this.snake = [];
+        this.snakeLength = 4;
+        this.points = 0;
         this.wallSize = 10;
         this.dx = 0;
         this.dy = 0;
@@ -16,10 +19,13 @@ class SnakeGame{
         this.resetGame();
         setInterval(() => {
             this.clearCanvas();
+            this.checkFoodColision()
+            this.checkWallsColision();
+            this.checkSnakeColision();
             if(!this.pauseGame) this.moveSnake(this.dx, this.dy);
             this.drawFood();
             this.drawSnake();
-            
+            this.printPoints();
         }, 100)
     }
 
@@ -78,9 +84,10 @@ class SnakeGame{
 
     resetGame(){
         this.snake = [];
-        this.makeSnake(5);
+        this.points = 0;
+        this.snakeLength = 4;
+        this.makeSnake(this.snakeLength);
         this.randomFood();
-        console.log(this.food);
         this.pauseGame = true;
     }
 
@@ -113,6 +120,34 @@ class SnakeGame{
     drawFood(){
         this.context2d.fillStyle = this.food.color;
         this.context2d.fillRect(this.food.x, this.food.y, this.wallSize, this.wallSize);
+    }
+
+    checkWallsColision(){
+        this.snake.forEach( (el) => {
+            if (el.x > this.canvas.width || el.x < 0) this.resetGame();
+            if (el.y > this.canvas.height || el.y < 0) this.resetGame();
+        });
+    }
+
+    checkFoodColision(){
+        if (this.food.x === this.snake[0].x && this.food.y === this.snake[0].y){
+            this.snake.push(Object.assign({},this.snake[this.snake.length-1]));
+            this.randomFood();
+            this.points++;
+        }
+    }
+
+    checkSnakeColision() {
+        for (let i = 1; i < this.snake.length; i++) {
+          if (this.snake[i].x === this.snake[0].x && this.snake[i].y === this.snake[0].y) {
+            this.resetGame();
+            break;
+          }
+        }
+      } 
+
+    printPoints(){
+        this.pointSelector.innerHTML = `Points: ${this.points}`;
     }
 }
 
